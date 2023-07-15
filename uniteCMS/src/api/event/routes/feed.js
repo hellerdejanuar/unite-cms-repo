@@ -2,7 +2,7 @@ module.exports = {
   routes: [
     {
       method: 'GET',
-      path: '/api/home',
+      path: '/home',
       handler: 'event.getHomePackage',
       config: {
         auth: false,
