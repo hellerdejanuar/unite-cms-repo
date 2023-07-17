@@ -8,12 +8,13 @@
     "description": ""
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": false
   },
   "pluginOptions": {},
   "attributes": {
     "name": {
-      "type": "string"
+      "type": "string",
+      "pluginOptions": {}
     },
     "slug": {
       "type": "uid",
@@ -21,10 +22,12 @@
       "targetField": "name"
     },
     "location": {
-      "type": "string"
+      "type": "string",
+      "pluginOptions": {}
     },
     "description": {
-      "type": "text"
+      "type": "text",
+      "pluginOptions": {}
     },
     "image": {
       "type": "media",
@@ -32,21 +35,26 @@
       "required": false,
       "allowedTypes": [
         "images"
-      ]
+      ],
+      "pluginOptions": {}
     },
     "config": {
-      "type": "json"
+      "type": "json",
+      "pluginOptions": {}
     },
     "status": {
       "type": "boolean",
-      "default": true
+      "default": true,
+      "pluginOptions": {}
     },
     "max_people": {
-      "type": "integer"
+      "type": "integer",
+      "pluginOptions": {}
     },
     "people_count": {
       "type": "integer",
-      "default": 0
+      "default": 0,
+      "pluginOptions": {}
     },
     "event_host": {
       "type": "relation",
@@ -61,7 +69,8 @@
       "inversedBy": "attending_events"
     },
     "event_datetime": {
-      "type": "datetime"
+      "type": "datetime",
+      "pluginOptions": {}
     }
   }
 }

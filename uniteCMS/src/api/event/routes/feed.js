@@ -2,11 +2,9 @@ module.exports = {
   routes: [
     {
       method: 'GET',
-      path: '/home',
+      path: '/home/:id',
       handler: 'event.getHomePackage',
-      config: {
-        auth: false,
-      }
+      config: { auth: false }
     }
   ]
 }
