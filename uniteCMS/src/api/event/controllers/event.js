@@ -28,7 +28,7 @@ module.exports = createCoreController('api::event.event',
             }
           })
 
-        response = { 
+        response = await { 
           username: response.username,
           attending_events: response.attending_events,
           hosted_events: response.hosted_events,

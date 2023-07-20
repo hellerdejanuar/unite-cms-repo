@@ -93,6 +93,11 @@
       "relation": "manyToMany",
       "target": "api::event.event",
       "mappedBy": "participants"
+    },
+    "friends": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "plugin::users-permissions.user"
     }
   }
 }
