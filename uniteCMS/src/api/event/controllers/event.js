@@ -11,25 +11,18 @@ module.exports = createCoreController('api::event.event',
   ({strapi}) => ({
     async getHomePackage(ctx) {
 
-      const authUser = ctx.state.user;
-      const { query } = ctx;
       const id = ctx.params.id
+      const authUser = ctx.state.user;
+      // const { query } = ctx;
+      // const sanitizedQuery = await sanitizeQuery(query, ctx);
+      // const user = await getService('user').fetch(authUser.id, sanitizedQuery);
+      // ctx.body = await sanitizeOutput(user, ctx);
 
       if (!authUser) {
         return ctx.unauthorized();
       } else if (authUser.id != id) {
         return ctx.unauthorized();
       }
-  
-      // const sanitizedQuery = await sanitizeQuery(query, ctx);
-      // const user = await getService('user').fetch(authUser.id, sanitizedQuery);
-  
-      // ctx.body = await sanitizeOutput(user, ctx);
-
-
-
-      // @ts-ignore
-
 
       async function fetchUserEvents(id) {
         const SERVICE = 'plugin::users-permissions.user'
