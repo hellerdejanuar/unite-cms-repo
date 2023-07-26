@@ -10,9 +10,26 @@ const { createCoreController } = require('@strapi/strapi').factories;
 module.exports = createCoreController('api::event.event', 
   ({strapi}) => ({
     async getHomePackage(ctx) {
-      // @ts-ignore
+
+      const authUser = ctx.state.user;
+      const { query } = ctx;
       const id = ctx.params.id
-      const { query } = ctx
+
+      if (!authUser) {
+        return ctx.unauthorized();
+      } else if (authUser.id != id) {
+        return ctx.unauthorized();
+      }
+  
+      // const sanitizedQuery = await sanitizeQuery(query, ctx);
+      // const user = await getService('user').fetch(authUser.id, sanitizedQuery);
+  
+      // ctx.body = await sanitizeOutput(user, ctx);
+
+
+
+      // @ts-ignore
+
 
       async function fetchUserEvents(id) {
         const SERVICE = 'plugin::users-permissions.user'
@@ -45,6 +62,8 @@ module.exports = createCoreController('api::event.event',
             attending_events: userData.attending_events,
             hosted_events: userData.hosted_events,
             events_feed: eventsFeed}
+      }).catch((err) =>{
+        console.log('Error at: homePackage' + err)
       })
       
       return homePackage
