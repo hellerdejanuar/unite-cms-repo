@@ -6,7 +6,6 @@
 const { createCoreController } = require('@strapi/strapi').factories;
 
 const utils = require('@strapi/utils');
-const { ReturnDocument } = require('mongodb');
 
 
 
