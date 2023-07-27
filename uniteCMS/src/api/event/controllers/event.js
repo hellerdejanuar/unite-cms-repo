@@ -3,8 +3,12 @@
 /**
  * event controller
  */
-
 const { createCoreController } = require('@strapi/strapi').factories;
+
+const utils = require('@strapi/utils');
+const { ReturnDocument } = require('mongodb');
+
+
 
 
 module.exports = createCoreController('api::event.event', 
@@ -12,7 +16,7 @@ module.exports = createCoreController('api::event.event',
     async getHomePackage(ctx) {
 
       const id = ctx.params.id
-      const authUser = ctx.state.user;
+      const authUser = ctx.state.user; // jwt 
       // const { query } = ctx;
       // const sanitizedQuery = await sanitizeQuery(query, ctx);
       // const user = await getService('user').fetch(authUser.id, sanitizedQuery);
@@ -26,9 +30,11 @@ module.exports = createCoreController('api::event.event',
 
       async function fetchUserEvents(id) {
         const SERVICE = 'plugin::users-permissions.user'
-        const PARAMS = { populate: ['attending_events', 'hosted_events'] }
+        const PARAMS = { populate: ['attending_events', 'hosted_events', 'image'] }
 
-        return strapi.entityService.findOne(SERVICE, id, PARAMS)
+        const entity = strapi.entityService.findOne(SERVICE, id, PARAMS)
+        // const sanitizedResults = await this.sanitizeOutput(results, ctx);
+        return entity
       }
 
       async function fetchEventsFeed(id) {
@@ -39,7 +45,7 @@ module.exports = createCoreController('api::event.event',
           }}
         
         const PARAMS = { 
-          populate: ['event_host', 'participants'], 
+          populate: ['event_host', 'participants', 'image'], 
           filters: FILTERS
         }
 
@@ -54,7 +60,7 @@ module.exports = createCoreController('api::event.event',
           return { username: userData.username,
             attending_events: userData.attending_events,
             hosted_events: userData.hosted_events,
-            events_feed: eventsFeed}
+            events_feed: eventsFeed }
       }).catch((err) =>{
         console.log('Error at: homePackage' + err)
       })
