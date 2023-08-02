@@ -16,6 +16,7 @@
     "@strapi/plugin-users-permissions": "4.11.1",
     "@strapi/provider-email-sendgrid": "^4.11.4",
     "@strapi/strapi": "4.11.1",
+    "@strapi/utils": "^4.12.0",
     "better-sqlite3": "8.0.1"
   },
   "author": {
