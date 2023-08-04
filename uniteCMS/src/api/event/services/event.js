@@ -12,10 +12,27 @@ const { createCoreService } = require('@strapi/strapi').factories;
 module.exports = createCoreService('api::event.event', ({strapi}) => ({
   async fetchPersonalEvents(id, ctx) {
     const USERS_PERMISSIONS_SERVICE = 'plugin::users-permissions.user'
-    const PARAMS = { populate: ['attending_events', 'hosted_events', 'image'] }// TODO: pedir related imagenes de hosted y attending 
+
+    const POPULATE =  {
+      attending_events: {
+        populate: {
+          image: { fields: ['formats'] }
+        }
+      } , // TODO: pedir related imagenes de hosted y attending 
+      hosted_events: {
+        populate: {
+          image: { fields: ['formats'] }
+        }
+      }, 
+    }
+    
+    const PARAMS = { 
+      populate: POPULATE
+    }
   
     const contentType = strapi.contentType(USERS_PERMISSIONS_SERVICE)
     const PersonalEvents_unclean = strapi.entityService.findOne(USERS_PERMISSIONS_SERVICE, id, PARAMS)
+    // @ts-ignore
     const PersonalEvents_sanitized = await contentAPI.output(PersonalEvents_unclean, contentType, ctx.state.auth);
   
     return PersonalEvents_unclean // <--- TODO: Clean this data
@@ -23,14 +40,39 @@ module.exports = createCoreService('api::event.event', ({strapi}) => ({
   
   async fetchEventsFeed(id, ctx) {
     const SERVICE = 'api::event.event'
-    const FILTERS = {  
+    const POPULATE = {
+      event_host: {
+        fields: [
+        'id',
+        'username',
+        ]
+      }, 
+      participants: {
+        fields: [
+          'id',
+          'username',
+        ]
+      },
+      image: {
+        fields: ['formats']
+      },
+    }
+
+    const EVENT_FIELDS = [
+      'name', 
+      'id',
+    ]
+
+    const EVENT_FILTERS = {  
       $not: {
           event_host: { id: id }
-      }}
+      }
+    }
     
     const PARAMS = { 
-      populate: ['event_host', 'participants', 'image'], 
-      filters: FILTERS
+      populate: POPULATE,
+      fields: EVENT_FIELDS,
+      filters: EVENT_FILTERS
     }
   
     const EventsFeed_unclean = await strapi.entityService.findMany(SERVICE, PARAMS)
@@ -52,7 +94,9 @@ module.exports = createCoreService('api::event.event', ({strapi}) => ({
 
     // ## Main function ---> 
     const HomePackage = await Promise.all([
+      // @ts-ignore
       strapi.service('api::event.event').fetchPersonalEvents(id, ctx), 
+      // @ts-ignore
       strapi.service('api::event.event').fetchEventsFeed(id, ctx)
     ])
       .then(([ userData, eventsFeed ]) => {
