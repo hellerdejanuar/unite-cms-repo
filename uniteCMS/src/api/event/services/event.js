@@ -9,21 +9,57 @@ const { contentAPI } = sanitize;
 
 const { createCoreService } = require('@strapi/strapi').factories;
 
+const STD_PARTICIPANTS_FIELDS = {
+  populate: {
+    profile_image: {
+      fields: ['formats']
+    }
+  },
+  fields: [
+    'id',
+    'username',
+    'phone'
+  ]
+}
+const STD_EVENT_HOST_FIELDS = {
+  populate: {
+    profile_image: {
+      fields: ['formats']
+    }
+  },
+  fields: [
+  'id',
+  'username',
+  'phone',
+  ]
+}
+const STD_POPULATE_EVENT = {
+  image: { fields: ['formats'] },
+  event_host: STD_EVENT_HOST_FIELDS, 
+  participants: STD_PARTICIPANTS_FIELDS,
+}
+const STD_EVENT_FIELDS = [
+  'name', 
+  'id',
+  'max_people',
+  'people_count',
+  'event_datetime',
+  'location',
+  'config',
+  'description',
+]
+
+
 module.exports = createCoreService('api::event.event', ({strapi}) => ({
+
   async fetchPersonalEvents(id, ctx) {
     const USERS_PERMISSIONS_SERVICE = 'plugin::users-permissions.user'
 
     const POPULATE =  {
-      attending_events: {
-        populate: {
-          image: { fields: ['formats'] }
-        }
-      } , // TODO: pedir related imagenes de hosted y attending 
-      hosted_events: {
-        populate: {
-          image: { fields: ['formats'] }
-        }
-      }, 
+      attending_events: { populate : STD_POPULATE_EVENT,
+                          fields: STD_EVENT_FIELDS, } , // TODO: pedir related imagenes de hosted y attending 
+      hosted_events: {  populate: STD_POPULATE_EVENT,
+                        fields: STD_EVENT_FIELDS }, 
     }
     
     const PARAMS = { 
@@ -40,39 +76,55 @@ module.exports = createCoreService('api::event.event', ({strapi}) => ({
   
   async fetchEventsFeed(id, ctx) {
     const SERVICE = 'api::event.event'
-    const POPULATE = {
-      event_host: {
-        fields: [
+    const PARTICIPANTS_FIELDS = {
+      populate: {
+        profile_image: {
+          fields: ['formats']
+        }
+      },
+      fields: [
         'id',
         'username',
-        ]
-      }, 
-      participants: {
-        fields: [
-          'id',
-          'username',
-        ]
-      },
-      image: {
-        fields: ['formats']
-      },
+        'phone'
+      ]
     }
-
+    const EVENT_HOST_FIELDS = {
+      populate: {
+        profile_image: {
+          fields: ['formats']
+        }
+      },
+      fields: [
+      'id',
+      'username',
+      'phone',
+      ]
+    }
+    const POPULATE_EVENT = {
+      image: { fields: ['formats'] },
+      event_host: EVENT_HOST_FIELDS, 
+      participants: PARTICIPANTS_FIELDS,
+    }
     const EVENT_FIELDS = [
       'name', 
       'id',
+      'max_people',
+      'people_count',
+      'event_datetime',
+      'location',
+      'config',
+      'description',
     ]
-
-    const EVENT_FILTERS = {  
+    const EVENT_FEED_FILTERS = {  
       $not: {
           event_host: { id: id }
       }
     }
-    
+  
     const PARAMS = { 
-      populate: POPULATE,
+      populate: POPULATE_EVENT,
       fields: EVENT_FIELDS,
-      filters: EVENT_FILTERS
+      filters: EVENT_FEED_FILTERS
     }
   
     const EventsFeed_unclean = await strapi.entityService.findMany(SERVICE, PARAMS)
@@ -81,6 +133,7 @@ module.exports = createCoreService('api::event.event', ({strapi}) => ({
     
     return EventsFeed_sanitized
   },
+  
   async getHomePackage  (ctx) {
 
     const id = ctx.params.id
