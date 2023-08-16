@@ -38,7 +38,7 @@ module.exports = {
     'people_count',
     'event_datetime',
     'location',
-    'config',
+    'online',
     'description',
   ],
 }
