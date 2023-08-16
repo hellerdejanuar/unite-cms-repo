@@ -44,7 +44,7 @@
     },
     "people_count": {
       "type": "integer",
-      "default": 0,
+      "default": 1,
       "pluginOptions": {}
     },
     "event_host": {
