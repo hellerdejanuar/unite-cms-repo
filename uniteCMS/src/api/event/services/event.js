@@ -67,6 +67,7 @@ module.exports = createCoreService("api::event.event", ({ strapi }) => ({
       SERVICE,
       PARAMS
     );
+    
     const contentType = strapi.contentType(SERVICE);
     const EventsFeed_sanitized = await contentAPI.output(
       EventsFeed_unclean,

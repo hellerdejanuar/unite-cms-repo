@@ -16,11 +16,6 @@
       "type": "string",
       "pluginOptions": {}
     },
-    "slug": {
-      "type": "uid",
-      "required": true,
-      "targetField": "name"
-    },
     "location": {
       "type": "string",
       "pluginOptions": {}
@@ -36,10 +31,6 @@
       "allowedTypes": [
         "images"
       ],
-      "pluginOptions": {}
-    },
-    "config": {
-      "type": "json",
       "pluginOptions": {}
     },
     "status": {
@@ -71,6 +62,10 @@
     "event_datetime": {
       "type": "datetime",
       "pluginOptions": {}
+    },
+    "online": {
+      "type": "boolean",
+      "default": false
     }
   }
 }

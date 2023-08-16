@@ -7,7 +7,7 @@ const STD_PARTICIPANTS_FIELDS = {
   fields: [
     'id',
     'username',
-    'phone'
+    'phone',
   ]
 }
 
