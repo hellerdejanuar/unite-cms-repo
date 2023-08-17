@@ -47,5 +47,22 @@ module.exports = createCoreController('api::event.event',
       return `successfully joined event: ${event_id}`
     },
 
+    async unjoin(ctx) {
+      const user_id = ctx.state.user.id
+      const event_id = ctx.params.event_id
+
+      console.log(user_id)
+
+      const response = await strapi.entityService.update(
+        'plugin::users-permissions.user', 
+        user_id, 
+        { data: { 
+            attending_events: { disconnect : [ event_id ] } 
+        }}
+      )
+
+      return `successfully unjoined event: ${event_id}`
+    },
+
   })
 );

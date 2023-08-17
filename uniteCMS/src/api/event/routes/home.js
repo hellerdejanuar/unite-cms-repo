@@ -9,6 +9,11 @@ module.exports = {
       method: 'POST',
       path: '/join/:event_id',
       handler: 'event.join'
-    }
+    },
+    {
+      method: 'DELETE',
+      path: '/join/:event_id',
+      handler: 'event.unjoin'
+    },
   ]
 }
