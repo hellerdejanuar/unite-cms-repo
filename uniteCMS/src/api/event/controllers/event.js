@@ -1,5 +1,7 @@
 'use strict';
 
+const { HttpStatusCode } = require('axios');
+
 /**
  * event controller
  */
@@ -42,7 +44,7 @@ module.exports = createCoreController('api::event.event',
         }}
       )
 
-      return response
+      return `successfully joined event: ${event_id}`
     },
 
   })
