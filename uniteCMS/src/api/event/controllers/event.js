@@ -18,13 +18,32 @@ module.exports = createCoreController('api::event.event',
 
     async create(ctx) {
       let request = JSON.parse(ctx.request.body.data);
+      const user_id = ctx.state.user
 
-      request["event_host"] = { connect : [ctx.state.user] }
+      request["event_host"] = { connect : [ user_id ] }
 
       ctx.request.body.data = JSON.stringify(request)
       // @ts-ignore
       const response = await super.create(ctx);
       return response
-    }
+    },
+
+    async join(ctx) {
+      const user_id = ctx.state.user.id
+      const event_id = ctx.params.event_id
+
+      console.log(user_id)
+
+      const response = await strapi.entityService.update(
+        'plugin::users-permissions.user', 
+        user_id, 
+        { data: { 
+            attending_events: { connect : [ event_id ] } 
+        }}
+      )
+
+      return response
+    },
+
   })
 );
