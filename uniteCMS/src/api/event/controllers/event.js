@@ -1,6 +1,6 @@
 'use strict';
 
-const { HttpStatusCode } = require('axios');
+const { ApplicationError } = require('@strapi/utils/dist/errors');
 
 /**
  * event controller
@@ -19,15 +19,43 @@ module.exports = createCoreController('api::event.event',
     },
 
     async create(ctx) {
-      let request = JSON.parse(ctx.request.body.data);
-      const user_id = ctx.state.user
+      try {
+        const user_id = ctx.state.user
 
-      request["event_host"] = { connect : [ user_id ] }
+        let request_body = ctx.request.body
+        const event_host_connection = { connect : [ user_id ] }
 
-      ctx.request.body.data = JSON.stringify(request)
-      // @ts-ignore
-      const response = await super.create(ctx);
-      return response
+        switch (ctx.request.header['content-type'].split(';')[0]) {
+          case 'multipart/form-data':
+            console.log("Multipart/Form-Data")
+
+            request_body.data = JSON.parse(request_body.data)
+
+            request_body.data["event_host"] = event_host_connection
+
+            request_body.data = JSON.stringify(request_body.data)
+            break;
+        
+          case 'application/json':
+            console.log("Application/JSON")
+            request_body.data["event_host"] = event_host_connection
+            
+          default:
+            break;
+        }
+
+        ctx.request.body = request_body
+        
+        // @ts-ignore
+        const response = await super.create(ctx);
+        return response
+      
+        
+      } catch (err) {
+        console.log(err)
+        return ctx.badRequest('cannot handle request', {request: `${ctx.request.body}`})
+      }
+
     },
 
     async join(ctx) {
