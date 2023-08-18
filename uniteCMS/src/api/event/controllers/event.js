@@ -20,31 +20,30 @@ module.exports = createCoreController('api::event.event',
 
     async create(ctx) {
       try {
-        const user_id = ctx.state.user
+        const userId = ctx.state.user
 
-        let request_body = ctx.request.body
-        const event_host_connection = { connect : [ user_id ] }
+        let requestBody = ctx.request.body
+        const DATA_TO_APPEND = { event_host : { connect : [ userId ] } }
 
         switch (ctx.request.header['content-type'].split(';')[0]) {
           case 'multipart/form-data':
             console.log("Multipart/Form-Data")
 
-            request_body.data = JSON.parse(request_body.data)
-
-            request_body.data["event_host"] = event_host_connection
-
-            request_body.data = JSON.stringify(request_body.data)
+            requestBody.data = JSON.parse(requestBody.data)
+            requestBody.data = { ...requestBody.data, DATA_TO_APPEND }
+            requestBody.data = JSON.stringify(requestBody.data)
             break;
         
           case 'application/json':
             console.log("Application/JSON")
-            request_body.data["event_host"] = event_host_connection
+            requestBody.data = { ...requestBody.data, DATA_TO_APPEND }
+            break;
             
           default:
             break;
         }
 
-        ctx.request.body = request_body
+        ctx.request.body = requestBody
         
         // @ts-ignore
         const response = await super.create(ctx);
@@ -53,7 +52,7 @@ module.exports = createCoreController('api::event.event',
         
       } catch (err) {
         console.log(err)
-        return ctx.badRequest('cannot handle request', {request: `${ctx.request.body}`})
+        return ctx.badRequest('cannot handle request', { request: `${ctx.request.body}`})
       }
 
     },
