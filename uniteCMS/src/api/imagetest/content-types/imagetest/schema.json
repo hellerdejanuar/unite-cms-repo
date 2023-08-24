@@ -1,0 +1,22 @@
+{
+  "kind": "collectionType",
+  "collectionName": "imagetests",
+  "info": {
+    "singularName": "imagetest",
+    "pluralName": "imagetests",
+    "displayName": "imagetest"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "image": {
+      "allowedTypes": [
+        "images"
+      ],
+      "type": "media",
+      "multiple": false
+    }
+  }
+}
