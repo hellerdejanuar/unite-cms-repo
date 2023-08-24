@@ -15,5 +15,11 @@ module.exports = {
       path: '/join/:event_id',
       handler: 'event.unjoin'
     },
+    {
+      method: 'POST',
+      path: '/altjoin/:event_id',
+      handler: 'event.altjoin'
+    },
+    
   ]
 }
