@@ -97,16 +97,16 @@
       "target": "api::event.event",
       "mappedBy": "participants"
     },
-    "friends": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "plugin::users-permissions.user"
-    },
     "public_name": {
       "type": "string",
       "required": true,
       "maxLength": 50,
       "minLength": 1
+    },
+    "friends": {
+      "type": "component",
+      "repeatable": true,
+      "component": "user-relationship.friends"
     }
   }
 }

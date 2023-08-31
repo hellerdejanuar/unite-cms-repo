@@ -17,6 +17,22 @@ module.exports = createCoreService("api::event.event", ({ strapi }) => ({
   async fetchPersonalEvents(id, ctx) {
     const USERS_PERMISSIONS_SERVICE = "plugin::users-permissions.user";
 
+    const FRIEND_FIELDS = {
+      populate: {
+        profile_image: {
+          fields: ['formats']
+        },
+        hosted_events: {
+          populate: STD_POPULATE_EVENT,
+          fields: STD_EVENT_FIELDS
+        },
+      },
+      fields: [
+        'id',
+        'username',
+      ]
+    }
+
     const POPULATE = {
       attending_events: {
         populate: STD_POPULATE_EVENT,
@@ -26,6 +42,11 @@ module.exports = createCoreService("api::event.event", ({ strapi }) => ({
         populate: STD_POPULATE_EVENT,
         fields: STD_EVENT_FIELDS,
       },
+      friends: {
+        populate: { 
+          friend_info: FRIEND_FIELDS
+        }
+      }
     };
 
     const PARAMS = {
@@ -54,20 +75,21 @@ module.exports = createCoreService("api::event.event", ({ strapi }) => ({
     const EVENT_FEED_FILTERS = {
       $not: {
         event_host: { id: id },
+        // add joined events to be excluded in this feed
       },
     };
 
     const PARAMS = {
       populate: STD_POPULATE_EVENT,
       fields: STD_EVENT_FIELDS,
-      filters: EVENT_FEED_FILTERS,
+      //filters: EVENT_FEED_FILTERS,
     };
 
     const EventsFeed_unclean = await strapi.entityService.findMany(
       SERVICE,
       PARAMS
     );
-    
+
     const contentType = strapi.contentType(SERVICE);
     const EventsFeed_sanitized = await contentAPI.output(
       EventsFeed_unclean,
@@ -89,19 +111,16 @@ module.exports = createCoreService("api::event.event", ({ strapi }) => ({
     }
 
     // ## Main function --->
-    const HomePackage = await Promise.all([
-      // @ts-ignore
-      strapi.service("api::event.event").fetchPersonalEvents(id, ctx),
-      // @ts-ignore
-      strapi.service("api::event.event").fetchEventsFeed(id, ctx),
-    ])
-      .then(([userData, eventsFeed]) => {
+    const HomePackage = await strapi.service("api::event.event").fetchPersonalEvents(id, ctx).then((userData) => {
         // Process PersonalEvents & Feed Data
+
+        let events_feed = userData.friends.reduce((accum, friend) => accum.concat(friend.friend_info.hosted_events), [])
+
         return {
           username: userData.username || "",
           attending_events: userData.attending_events || [],
           hosted_events: userData.hosted_events || [],
-          events_feed: eventsFeed || [],
+          events_feed: events_feed || [],
         };
       })
       .catch((err) => {

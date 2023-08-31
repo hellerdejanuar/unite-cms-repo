@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_user_relationship_friends",
+  "info": {
+    "displayName": "friend",
+    "icon": "oneToMany",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "friend_info": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "confirmed": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    }
+  }
+}

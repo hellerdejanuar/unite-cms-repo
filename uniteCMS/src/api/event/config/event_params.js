@@ -35,7 +35,7 @@ module.exports = {
     'name', 
     'id',
     'max_people',
-    'people_count',
+    'is_full',
     'event_datetime',
     'location',
     'online',

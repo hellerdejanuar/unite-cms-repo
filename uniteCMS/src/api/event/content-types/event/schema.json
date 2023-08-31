@@ -42,11 +42,6 @@
       "type": "integer",
       "pluginOptions": {}
     },
-    "people_count": {
-      "type": "integer",
-      "default": 1,
-      "pluginOptions": {}
-    },
     "event_host": {
       "type": "relation",
       "relation": "manyToOne",
@@ -66,6 +61,11 @@
     "online": {
       "type": "boolean",
       "default": false
+    },
+    "is_full": {
+      "type": "boolean",
+      "default": false,
+      "required": false
     }
   }
 }
