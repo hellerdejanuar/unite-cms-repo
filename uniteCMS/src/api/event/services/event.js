@@ -129,4 +129,74 @@ module.exports = createCoreService("api::event.event", ({ strapi }) => ({
 
     return HomePackage;
   },
+  
+  async join(ctx) {
+    const action = 'join'
+    const action_target = 'event'
+
+    const user_id = ctx.state.user.id
+    const event_id = ctx.params.event_id
+    
+    const failLog = `user: ${user_id} could not perform < ${action} > on ${action_target}: ${event_id}`;
+    const successLog = `user: ${user_id} < ${action} > successful on ${action_target}: ${event_id}`
+
+    try {
+      const response = await strapi.entityService.update(
+        'api::event.event', 
+        event_id, 
+        { data: { 
+            participants: { connect : [ user_id ] } 
+        }},
+        
+      )
+      
+      if (!response) {
+        throw new Error(failLog + `. [${action_target} not found]`)
+      }
+
+      console.log(successLog)
+      return successLog
+
+    } catch (err) {
+      console.log(err)
+      console.log(failLog)
+      return failLog
+    }
+  },
+
+  async unjoin(ctx) {
+    const action = 'unjoin'
+    const action_target = 'event'
+
+    const user_id = ctx.state.user.id
+    const event_id = ctx.params.event_id
+
+    const successLog = `user: ${user_id} < ${action} > successful on ${action_target}: ${event_id}`
+    const failLog = `user: ${user_id} could not perform < ${action} > on "${action_target}": ${event_id}`;
+
+    try {
+      const response = await strapi.entityService.update(
+        'api::event.event', 
+        event_id, 
+        { data: { 
+          attending_events: { disconnect : [ user_id ] } 
+        }}
+      )
+
+      // TODO: Check if you are a participant of that event
+      
+      if (!response) {
+        throw new Error(failLog + `. [${action_target} not found]`)
+      }
+
+      console.log(successLog)
+      return successLog
+
+
+    } catch (err) {
+      console.log(err)
+      console.log(failLog)
+      return failLog
+    }
+  },
 }));

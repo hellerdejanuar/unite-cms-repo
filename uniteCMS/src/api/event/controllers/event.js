@@ -53,97 +53,27 @@ module.exports = createCoreController('api::event.event',
         
       } catch (err) {
         console.log(err)
-        return ctx.badRequest('cannot handle request', { request: `${ctx.request.body}`})
+        return ctx.badRequest('cannot handle request: service error', { request: `${ctx.request.body}`})
       }
 
     },
 
   // ### JOIN, UNJOIN -----------------------------------------
     async join(ctx) {
-      const action = 'join'
-      const target = 'event'
-
-      const user_id = ctx.state.user.id
-      const event_id = ctx.params.event_id
-      
-      const failLog = `user: ${user_id} could not perform < ${action} > on ${target}: ${event_id}`;
-      const successLog = `user: ${user_id} < ${action} > successful on event: ${event_id}`
-
       try {
-        const response = await strapi.entityService.update(
-          'plugin::users-permissions.user', 
-          user_id, 
-          { data: { 
-              attending_events: { connect : [ event_id ] } 
-          }}
-        )
-
-        console.log(successLog)
-        
-        return successLog
-
+        return await strapi.service('api::event.event').join(ctx)
       } catch (err) {
         console.log(err)
-        console.log(failLog)
-        return failLog
-      }
-    },
-
-    async altjoin(ctx) {
-      const action = 'altjoin'
-      const target = 'event'
-
-      const user_id = ctx.state.user.id
-      const event_id = ctx.params.event_id
-      
-      const failLog = `user: ${user_id} could not perform < ${action} > on ${target}: ${event_id}`;
-      const successLog = `user: ${user_id} < ${action} > successful on event: ${event_id}`
-
-      try {
-        const response = await strapi.entityService.update(
-          'plugin::users-permissions.user', 
-          user_id, 
-          { data: { 
-              attending_events: { connect : [ event_id ] } 
-          }}
-        )
-
-        console.log(successLog)
-        
-        return successLog
-
-      } catch (err) {
-        console.log(err)
-        console.log(failLog)
-        return failLog
+        return ctx.badRequest('cannot handle request: service error', { request: `${ctx.request.body}`})
       }
     },
 
     async unjoin(ctx) {
-      const action = 'unjoin'
-      const target = 'event'
-
-      const user_id = ctx.state.user.id
-      const event_id = ctx.params.event_id
-
-      const successLog = `user: ${user_id} < ${action} > successful on event: ${event_id}`
-      const failLog = `user: ${user_id} could not perform < ${action} > on "${target}": ${event_id}`;
-
       try {
-        const response = await strapi.entityService.update(
-          'plugin::users-permissions.user', 
-          user_id, 
-          { data: { 
-            attending_events: { disconnect : [ event_id ] } 
-          }}
-        )
-
-        console.log(successLog)
-        return successLog
+        return await strapi.service('api::event.event').unjoin(ctx)
       } catch (err) {
         console.log(err)
-        console.log(failLog)
-        return failLog
+        return ctx.badRequest('cannot handle request: service error', { request: `${ctx.request.body}`})
       }
     },
 
