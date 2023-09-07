@@ -104,9 +104,14 @@
       "minLength": 1
     },
     "friends": {
-      "type": "component",
-      "repeatable": true,
-      "component": "user-relationship.friends"
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "plugin::users-permissions.user"
+    },
+    "pending_friend_requests": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "plugin::users-permissions.user"
     }
   }
 }

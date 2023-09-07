@@ -16,6 +16,16 @@
       "type": "boolean",
       "default": false,
       "required": true
+    },
+    "confirmed_friends": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "plugin::users-permissions.user"
+    },
+    "pending_friend_requests": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::event.event"
     }
   }
 }

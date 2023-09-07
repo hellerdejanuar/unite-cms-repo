@@ -114,7 +114,7 @@ module.exports = createCoreService("api::event.event", ({ strapi }) => ({
     const HomePackage = await strapi.service("api::event.event").fetchPersonalEvents(id, ctx).then((userData) => {
         // Process PersonalEvents & Feed Data
 
-        let events_feed = userData.friends.reduce((accum, friend) => accum.concat(friend.friend_info.hosted_events), [])
+        let events_feed = userData.friends.reduce((accum, friend) => accum.concat(friend.hosted_events), [])
 
         return {
           username: userData.username || "",
@@ -124,7 +124,7 @@ module.exports = createCoreService("api::event.event", ({ strapi }) => ({
         };
       })
       .catch((err) => {
-        console.log("Error at: homePackage" + err);
+        console.log("Error at: homePackage: " + err);
       });
 
     return HomePackage;
