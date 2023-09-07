@@ -15,7 +15,7 @@ module.exports = (plugin) => {
 
     try {
       // # friend part of the frienship process
-      const response_user = await strapi.entityService.update(
+      const response_friend = await strapi.entityService.update(
         'plugin::users-permissions.user', 
         friend_id, 
         { data: { 
@@ -25,12 +25,12 @@ module.exports = (plugin) => {
         }
       )
 
-      if (!response_user) {
+      if (!response_friend) {
         throw new Error(failLog + `. [${action_target} not found]`)
       }
 
       // # user part of the frienship process
-      const response_friend = await strapi.entityService.update(
+      const response_user = await strapi.entityService.update(
         'plugin::users-permissions.user', 
         user_id, 
         { data: { 
@@ -41,7 +41,7 @@ module.exports = (plugin) => {
       )
       console.log(successLog)
 
-      if (!response_friend) {
+      if (!response_user) {
         throw new Error(failLog + `. [${action_target} not found]`)
       }
 
