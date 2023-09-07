@@ -15,37 +15,45 @@ module.exports = (plugin) => {
 
     try {
       // # friend part of the frienship process
-      const response_friend = await strapi.entityService.update(
-        'plugin::users-permissions.user', 
-        friend_id, 
-        { data: { 
-            friends: { connect : [ user_id ] },
-            // pending_friend_requests: { disconnect: [ user_id ]}
+      const handleFriendData = async (user_id, friend_id) => {
+        const response_friend = await strapi.entityService.update(
+          'plugin::users-permissions.user', 
+          friend_id, 
+          { data: { 
+              friends: { connect : [ user_id ] },
+              // pending_friend_requests: { disconnect: [ user_id ]}
+            }
           }
-        }
-      )
+        )
 
+        return response_friend
+      }
+      
+      const response_friend = handleFriendData(user_id, friend_id)
       if (!response_friend) {
         throw new Error(failLog + `. [${action_target} not found]`)
       }
 
       // # user part of the frienship process
-      const response_user = await strapi.entityService.update(
-        'plugin::users-permissions.user', 
-        user_id, 
-        { data: { 
-            friends: { connect : [ friend_id ] },
-            // pending_friend_requests: { disconnect: [ friend_id ]}
+      const handleUserData = async (user_id, friend_id) => {
+        const response_user = await strapi.entityService.update(
+          'plugin::users-permissions.user', 
+          user_id, 
+          { data: { 
+              friends: { connect : [ friend_id ] },
+              // pending_friend_requests: { disconnect: [ friend_id ]}
+            }
           }
-        }
-      )
-      console.log(successLog)
+        )
+        return response_user
+      }
 
+      const response_user = handleUserData(user_id, friend_id)
       if (!response_user) {
         throw new Error(failLog + `. [${action_target} not found]`)
       }
 
-      
+      console.log(successLog)
       return successLog
 
     } catch (err) {
