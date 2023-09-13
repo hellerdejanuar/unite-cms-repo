@@ -58,10 +58,6 @@ module.exports = createCoreService("api::event.event", ({ strapi }) => ({
     // ## Main function --->
     const HomePackage = await strapi.service("api::event.event").fetchPersonalEvents(id, ctx).then((userData) => {
         // Process PersonalEvents & Feed Data
-
-        userData.friends.map((friend) => {
-          console.log(friend)
-        })
         
         let events_feed = userData.friends.reduce((accum, friend) => accum.concat(friend.hosted_events), [])
 
