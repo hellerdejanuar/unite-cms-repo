@@ -9,48 +9,22 @@ const { contentAPI } = sanitize;
 const { createCoreService } = require("@strapi/strapi").factories;
 
 const {
-  STD_POPULATE_EVENT,
   STD_EVENT_FIELDS,
+  STD_FRIEND_FIELDS,
 } = require("../config/event_params");
 
 module.exports = createCoreService("api::event.event", ({ strapi }) => ({
   async fetchPersonalEvents(id, ctx) {
     const USERS_PERMISSIONS_SERVICE = "plugin::users-permissions.user";
 
-    const FRIEND_FIELDS = {
-      populate: {
-        profile_image: {
-          fields: ['formats']
-        },
-        hosted_events: {
-          populate: STD_POPULATE_EVENT,
-          fields: STD_EVENT_FIELDS
-        },
-      },
-      fields: [
-        'id',
-        'username',
-      ]
-    }
 
-    const POPULATE = {
-      attending_events: {
-        populate: STD_POPULATE_EVENT,
-        fields: STD_EVENT_FIELDS,
-      },
-      hosted_events: {
-        populate: STD_POPULATE_EVENT,
-        fields: STD_EVENT_FIELDS,
-      },
-      friends: {
-        populate: { 
-          friend_info: FRIEND_FIELDS
-        }
-      }
-    };
 
     const PARAMS = {
-      populate: POPULATE,
+      populate: {
+        attending_events: STD_EVENT_FIELDS,
+        hosted_events: STD_EVENT_FIELDS,
+        friends: STD_FRIEND_FIELDS  
+      }
     };
 
     const contentType = strapi.contentType(USERS_PERMISSIONS_SERVICE);
@@ -69,36 +43,7 @@ module.exports = createCoreService("api::event.event", ({ strapi }) => ({
     return PersonalEvents_unclean; // <--- TODO: Sanitize !! this data
   },
 
-  async fetchEventsFeed(id, ctx) {
-    const SERVICE = "api::event.event";
 
-    const EVENT_FEED_FILTERS = {
-      $not: {
-        event_host: { id: id },
-        // add joined events to be excluded in this feed
-      },
-    };
-
-    const PARAMS = {
-      populate: STD_POPULATE_EVENT,
-      fields: STD_EVENT_FIELDS,
-      //filters: EVENT_FEED_FILTERS,
-    };
-
-    const EventsFeed_unclean = await strapi.entityService.findMany(
-      SERVICE,
-      PARAMS
-    );
-
-    const contentType = strapi.contentType(SERVICE);
-    const EventsFeed_sanitized = await contentAPI.output(
-      EventsFeed_unclean,
-      contentType,
-      ctx.state.auth
-    );
-
-    return EventsFeed_sanitized;
-  },
 
   async getHomePackage(ctx) {
     const id = ctx.params.id;
@@ -114,6 +59,10 @@ module.exports = createCoreService("api::event.event", ({ strapi }) => ({
     const HomePackage = await strapi.service("api::event.event").fetchPersonalEvents(id, ctx).then((userData) => {
         // Process PersonalEvents & Feed Data
 
+        userData.friends.map((friend) => {
+          console.log(friend)
+        })
+        
         let events_feed = userData.friends.reduce((accum, friend) => accum.concat(friend.hosted_events), [])
 
         return {
@@ -199,4 +148,35 @@ module.exports = createCoreService("api::event.event", ({ strapi }) => ({
       return failLog
     }
   },
+
+  // async fetchEventsFeed(id, ctx) {
+  //   const SERVICE = "api::event.event";
+
+  //   const EVENT_FEED_FILTERS = {
+  //     $not: {
+  //       event_host: { id: id },
+  //       // add joined events to be excluded in this feed
+  //     },
+  //   };
+
+  //   const PARAMS = {
+  //     populate: STD_POPULATE_EVENT,
+  //     fields: STD_EVENT_FIELDS,
+  //     //filters: EVENT_FEED_FILTERS,
+  //   };
+
+  //   const EventsFeed_unclean = await strapi.entityService.findMany(
+  //     SERVICE,
+  //     PARAMS
+  //   );
+
+  //   const contentType = strapi.contentType(SERVICE);
+  //   const EventsFeed_sanitized = await contentAPI.output(
+  //     EventsFeed_unclean,
+  //     contentType,
+  //     ctx.state.auth
+  //   );
+
+  //   return EventsFeed_sanitized;
+  // },
 }));
