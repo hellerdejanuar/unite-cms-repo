@@ -110,8 +110,15 @@
     },
     "pending_friend_requests": {
       "type": "relation",
-      "relation": "oneToMany",
-      "target": "plugin::users-permissions.user"
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user",
+      "mappedBy": "incoming_friend_requests"
+    },
+    "incoming_friend_requests": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "pending_friend_requests"
     }
   }
 }

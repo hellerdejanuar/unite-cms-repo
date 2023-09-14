@@ -1,3 +1,8 @@
+const { errors } = require("@strapi/utils");
+const { handleFriendRequest } = require("./server/utils/handleFriendRequest")
+// ## EXPORTS
+
+
 module.exports = (plugin) => {
   plugin.controllers.user.find = (ctx) => {
     console.log('test strapi-server');
@@ -9,60 +14,28 @@ module.exports = (plugin) => {
 
     const user_id = ctx.state.user.id
     const friend_id = ctx.params.friend_user_id
-    
+
     const failLog = `user: ${user_id} could not perform < ${action} > on ${action_target}: ${friend_id}`;
-    const successLog = `user: ${user_id} < ${action} > successful on ${action_target}: ${friend_id}`
+    const successLog = `user: ${user_id} < ${action} > successful on ${action_target}: ${friend_id}`;
+    let details = ''
 
     try {
-      // # friend part of the frienship process
-      const handleFriendData = async (user_id, friend_id) => {
-        const response_friend = await strapi.entityService.update(
-          'plugin::users-permissions.user', 
-          friend_id, 
-          { data: { 
-              friends: { connect : [ user_id ] },
-              // pending_friend_requests: { disconnect: [ user_id ]}
-            }
-          }
-        )
-
-        return response_friend
-      }
+      const friendship_response = await handleFriendRequest(user_id, friend_id)
+      console.debug(friendship_response)
       
-      const response_friend = handleFriendData(user_id, friend_id)
-      if (!response_friend) {
-        throw new Error(failLog + `. [${action_target} not found]`)
+      if (!friendship_response) {
+        details = `. [${action_target} not found]`
+        throw new Error(`[ ${failLog} ] ${details}`)
       }
+      details = `< Request ${friendship_response.} >`
 
-      // # user part of the frienship process
-      const handleUserData = async (user_id, friend_id) => {
-        const response_user = await strapi.entityService.update(
-          'plugin::users-permissions.user', 
-          user_id, 
-          { data: { 
-              friends: { connect : [ friend_id ] },
-              // pending_friend_requests: { disconnect: [ friend_id ]}
-            }
-          }
-        )
-        return response_user
-      }
-
-      const response_user = handleUserData(user_id, friend_id)
-      if (!response_user) {
-        throw new Error(failLog + `. [${action_target} not found]`)
-      }
-
-      console.log(successLog)
-      return successLog
+      return `[ ${successLog} ]\n${details}` 
 
     } catch (err) {
-      console.log(err)
-      console.log(failLog)
-      return failLog
+      console.error(err)
+      return `[ ${failLog} ]\n${err.message}`
     }
   },
-
 
   plugin.routes['content-api'].routes.push({
     method: 'GET',
