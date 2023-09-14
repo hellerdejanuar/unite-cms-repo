@@ -27,7 +27,7 @@ module.exports = (plugin) => {
         details = `. [${action_target} not found]`
         throw new Error(`[ ${failLog} ] ${details}`)
       }
-      details = `< Request ${friendship_response.} >`
+      details = `< Request ${friendship_response} >`
 
       return `[ ${successLog} ]\n${details}` 
 
