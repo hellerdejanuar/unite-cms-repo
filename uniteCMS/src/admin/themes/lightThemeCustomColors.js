@@ -1,4 +1,4 @@
-const lightThemeCustomColors = {
+export const lightThemeCustomColors = {
   alternative100: "#F3A5B3",
   alternative200: "#EF8195",
   alternative500: "#EA5D76",
@@ -44,4 +44,4 @@ const lightThemeCustomColors = {
   warning500: '#f29d41',
   warning600: '#d9822f',
   warning700: '#be5d01',
-}
+};

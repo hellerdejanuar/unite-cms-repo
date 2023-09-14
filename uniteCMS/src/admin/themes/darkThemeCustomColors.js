@@ -1,4 +1,4 @@
-const darkThemeCustomColors = {
+export const darkThemeCustomColors = {
   alternative100: "#E32649",
   alternative200: "#E84A67",
   alternative500: "#EA5D76",
@@ -27,7 +27,7 @@ const darkThemeCustomColors = {
   primary100: '#E9850C',
   primary200: '#F39016',
   primary500: '#F6AB51',
-  primary600: '#F8BE77', // error displaying this color over card 
+  primary600: '#F8BE77',
   primary700: '#FBDAB1',
   secondary100: '#E32649',
   secondary200: '#E84A67',
@@ -44,4 +44,4 @@ const darkThemeCustomColors = {
   warning500: '#f29d41',
   warning600: '#d9822f',
   warning700: '#be5d01',
-}
+};
