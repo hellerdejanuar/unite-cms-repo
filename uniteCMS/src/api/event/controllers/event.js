@@ -19,25 +19,26 @@ module.exports = createCoreController('api::event.event',
       }
     },
 
+    // # Create Event (with automatic DATA_TO_APPEND)
     async create(ctx) {
       try {
-        const userId = ctx.state.user
+        const userId = ctx.state.user.id
 
         let requestBody = ctx.request.body
         const DATA_TO_APPEND = { event_host : { connect : [ userId ] } }
 
         switch (ctx.request.header['content-type'].split(';')[0]) {
           case 'multipart/form-data':
-            console.log("Multipart/Form-Data")
+            console.debug("Multipart/Form-Data")
 
             requestBody.data = JSON.parse(requestBody.data)
-            requestBody.data = { ...requestBody.data, DATA_TO_APPEND }
+            requestBody.data = { ...requestBody.data, ...DATA_TO_APPEND }
             requestBody.data = JSON.stringify(requestBody.data)
             break;
         
           case 'application/json':
-            console.log("Application/JSON")
-            requestBody.data = { ...requestBody.data, DATA_TO_APPEND }
+            console.debug("Application/JSON")
+            requestBody.data = { ...requestBody.data, ...DATA_TO_APPEND }
             break;
             
           default:
@@ -50,9 +51,8 @@ module.exports = createCoreController('api::event.event',
         const response = await super.create(ctx);
         return response
       
-        
       } catch (err) {
-        console.log(err)
+        console.error(err)
         return ctx.badRequest('cannot handle request: service error', { request: `${ctx.request.body}`})
       }
 
