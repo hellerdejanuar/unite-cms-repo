@@ -4,10 +4,6 @@ const { handleFriendRequest } = require("./server/utils/handleFriendRequest")
 
 
 module.exports = (plugin) => {
-  plugin.controllers.user.find = (ctx) => {
-    console.log('test strapi-server');
-  }
-
   plugin.controllers.user.befriend = async (ctx) => {
     const action = 'befriend'
     const action_target = 'user'
@@ -27,8 +23,8 @@ module.exports = (plugin) => {
         details = `. [${action_target} not found]`
         throw new Error(`[ ${failLog} ] ${details}`)
       }
-      details = `< Request ${friendship_response} >`
 
+      details = `< Request ${friendship_response} >`
       return `[ ${successLog} ]\n${details}` 
 
     } catch (err) {

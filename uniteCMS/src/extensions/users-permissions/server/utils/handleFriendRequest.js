@@ -1,13 +1,18 @@
-const { confirm_friend_request, getFriendshipData, isMutual, isRequestAlreadySent, send_friend_request } = require("./utils");
+const { ApplicationError } = require("@strapi/utils/dist/errors");
+const { confirm_friend_request, getFriendshipData, isAlreadyFriend ,isMutual, isRequestAlreadySent, send_friend_request } = require("./utils");
 
 // ## MAIN FUNCTIONS
 const handleFriendRequest = async (user_id, friend_id) => {
 
-  const userData = await getFriendshipData(user_id);
+  const userData = await getFriendshipData(user_id, friend_id);
 
   // #  friend part of the frienship process  #
   if (!userData) {
-    throw new Error('Error fetching User ( Uncommon Behavior )');
+    throw new ApplicationError('Error fetching User ( Uncommon Behavior )');
+  }
+
+  if (isAlreadyFriend(userData, friend_id)) {
+    throw new ApplicationError('You are already friends with this user');
   }
 
   let response = null;
@@ -16,14 +21,14 @@ const handleFriendRequest = async (user_id, friend_id) => {
     // If the requested friend is already in incoming_friend_request 
     console.debug('isMutual == true');
     response = await confirm_friend_request(user_id, friend_id);
-    if (!response) throw new Error('Confirm friend request failed');
+    if (!response) throw new ApplicationError('Confirm friend request failed');
 
     return 'confirmed'
 
   } else if (isRequestAlreadySent(userData, friend_id)) {
     // Friend request already sent
     console.debug('isRequestAlreadySent == true');
-    throw new Error('Friendship request already sent');
+    throw new ApplicationError('Friendship request already sent');
 
   } else {
     // Else, try to send a friend request
@@ -32,7 +37,7 @@ const handleFriendRequest = async (user_id, friend_id) => {
 
     try { 
       response = await send_friend_request(user_id, friend_id);
-      if (!response) throw new Error('Send friend request failed');
+      if (!response) throw new ApplicationError('Send friend request failed');
       
       return 'sent'
 

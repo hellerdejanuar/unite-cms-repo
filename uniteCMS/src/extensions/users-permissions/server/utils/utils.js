@@ -20,17 +20,27 @@ const connect_disconnect_params = (relation_connect, connect, relation_disconnec
 };
 
 // # Services
-const getFriendshipData = async (user_id) => {
+const getFriendshipData = async (user_id, friend_id) => {
   try {
     const user = await strapi.entityService.findOne(
       'plugin::users-permissions.user',
       user_id,
       { populate: {
-        incoming_friend_requests: true,
-        pending_friend_requests: true
-      } }
+          incoming_friend_requests: {
+            fields: [ 'id' ],
+            filters: { id: friend_id },
+          },
+          pending_friend_requests: {
+            fields: ['id'],
+            filters: { id: friend_id },
+          },
+          friends: {
+            fields: ['id'],
+            filters: { id: friend_id },
+          }
+        },
+      }
     );
-    console.debug(user)
     return user
 
   } catch (err) {
@@ -87,33 +97,52 @@ const confirm_friend_request = async (user_id, friend_id) => {
       throw new Error(errorLog('WARNING: COULD NOT REVERT FRIENDSHIP TO PREVIOUS STATE')) }
 
   }
-
-
 };
 
 // # Utils
 const isMutual = (userData, friend_id) => {
-  if (userData.incoming_friend_requests.find(x => x.id == friend_id)) {
+  if (!userData.incoming_friend_requests[0]) return false;
+
+  if (userData.incoming_friend_requests[0].id == friend_id) { // Redundant since SQL filtering
     console.info('They already sent you a request, trying to connect... ');
     return true;
   } else {
-
     return false;
   }
 };
 
+const isAlreadyFriend = (userData, friend_id) => {
+  if (!userData.friends[0]){
+    console.info('Not friends yet, trying to connect... ');
+    return false
+  }
+
+  if (userData.friends[0].id == friend_id && userData.friends.length == 1) {
+    console.info('You are already friends')
+    return true
+    
+  } else {
+    console.info('Not friends yet, trying to connect... ');
+    return false 
+  }
+}
+
 const isRequestAlreadySent = (userData, friend_id) => {
   try {
-    if (userData.pending_friend_requests.find(x => x.id == friend_id)){
+    if (!userData.pending_friend_requests[0]) return false
+
+    if (userData.pending_friend_requests[0].id == friend_id){ // Redundant since SQL filtering
       console.info('Friendship request already sent')
       return true
     } 
+    else return false
+
   } catch (err) {
     console.error('No entries in < pending_friend_requests >' + err.message)
   }
 };
 
-
+exports.isAlreadyFriend = isAlreadyFriend;
 exports.confirm_friend_request = confirm_friend_request;
 exports.connect_disconnect_params = connect_disconnect_params;
 exports.getFriendshipData = getFriendshipData;
