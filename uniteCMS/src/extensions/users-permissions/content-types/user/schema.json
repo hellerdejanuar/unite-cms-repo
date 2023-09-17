@@ -1,3 +1,4 @@
+
 {
   "kind": "collectionType",
   "collectionName": "up_users",
@@ -25,7 +26,7 @@
       "configurable": false,
       "required": true,
       "searchable": false,
-      "private": true
+      "private": false
     },
     "provider": {
       "type": "string",
