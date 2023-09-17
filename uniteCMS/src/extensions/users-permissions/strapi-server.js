@@ -1,5 +1,6 @@
 const { errors } = require("@strapi/utils");
-const { handleFriendRequest } = require("./server/utils/handleFriendRequest")
+const { handleFriendRequest } = require("./server/utils/handleFriendRequest");
+const { ApplicationError } = require("@strapi/utils/dist/errors");
 // ## EXPORTS
 
 
@@ -29,7 +30,7 @@ module.exports = (plugin) => {
 
     } catch (err) {
       console.error(err)
-      return `[ ${failLog} ]\n${err.message}`
+      throw new ApplicationError( `[ ${failLog} ]\n${err.message}`)
     }
   },
 
