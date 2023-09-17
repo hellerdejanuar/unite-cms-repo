@@ -3,8 +3,18 @@ const { handleFriendRequest } = require("./server/utils/handleFriendRequest");
 const { ApplicationError } = require("@strapi/utils/dist/errors");
 // ## EXPORTS
 
-
 module.exports = (plugin) => {
+  plugin.controllers.user.find = async (ctx) => {
+    const users = await strapi.entityService.findMany(
+      "plugin::users-permissions.user",
+      { fields: ['id', 'public_name', 'username'],
+      populate: { profile_image: true} }
+    );
+
+    ctx.body = users;
+  },
+
+
   plugin.controllers.user.befriend = async (ctx) => {
     const action = 'befriend'
     const action_target = 'user'
