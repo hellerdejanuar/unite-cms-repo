@@ -1,8 +1,10 @@
-const { ApplicationError } = require("@strapi/utils/dist/errors");
-const { confirm_friend_request, getFriendshipData, isAlreadyFriend ,isMutual, isRequestAlreadySent, send_friend_request } = require("./utils");
+const { ApplicationError } = require('@strapi/utils/dist/errors');
+const { getFriendshipData, send_friend_request, confirm_friend_request } = require('./friendshipOperators') 
+const { isAlreadyFriend, isRequestAlreadySent, isMutual } = require('./utils')
 
-// ## MAIN FUNCTIONS
-const handleFriendRequest = async (user_id, friend_id) => {
+
+module.exports = ({   
+  async handleFriendRequest (user_id, friend_id) {
 
   const userData = await getFriendshipData(user_id, friend_id);
 
@@ -53,8 +55,5 @@ const handleFriendRequest = async (user_id, friend_id) => {
       )
     }
   }
-
-
-};
-
-exports.handleFriendRequest = handleFriendRequest;
+  },
+})

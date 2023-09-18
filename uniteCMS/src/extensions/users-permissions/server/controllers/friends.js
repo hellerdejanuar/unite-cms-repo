@@ -1,5 +1,5 @@
 const { ApplicationError } = require("@strapi/utils/dist/errors")
-const { handleFriendRequest } = require("../utils/handleFriendRequest")
+const { handleFriendRequest } = require("../services/friends/handleFriendRequest")
 
 
 module.exports = {

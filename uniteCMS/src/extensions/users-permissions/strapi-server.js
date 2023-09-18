@@ -1,5 +1,4 @@
 const { errors } = require("@strapi/utils");
-const { handleFriendRequest } = require("./server/utils/handleFriendRequest");
 const { ApplicationError } = require("@strapi/utils/dist/errors");
 const { findAllUsers } = require("./server/controllers/find");
 const { befriend } = require("./server/controllers/friends");
