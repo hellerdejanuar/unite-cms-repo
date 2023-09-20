@@ -63,8 +63,7 @@ module.exports = createCoreController('api::event.event',
       try {
         return await strapi.service('api::event.event').join(ctx)
       } catch (err) {
-        console.log(err)
-        return ctx.badRequest('cannot handle request: service error', { request: `${ctx.request.body}`})
+        throw err
       }
     },
 
