@@ -1,6 +1,6 @@
 'use strict';
 
-const { ApplicationError } = require('@strapi/utils/dist/errors');
+const { ApplicationError, NotFoundError, UnauthorizedError } = require('@strapi/utils/dist/errors');
 
 /**
  * event controller
@@ -15,7 +15,7 @@ module.exports = createCoreController('api::event.event',
       try {
         return await strapi.service('api::event.event').getHomePackage(ctx)
       } catch (err) {
-        ctx.body = err
+        throw err
       }
     },
 
@@ -52,8 +52,7 @@ module.exports = createCoreController('api::event.event',
         return response
       
       } catch (err) {
-        console.error(err)
-        return ctx.badRequest('cannot handle request: service error', { request: `${ctx.request.body}`})
+        throw new Error('cannot handle request: service error\n' + ctx.request.body)
       }
 
     },
@@ -61,7 +60,54 @@ module.exports = createCoreController('api::event.event',
   // ### JOIN, UNJOIN -----------------------------------------
     async join(ctx) {
       try {
-        return await strapi.service('api::event.event').join(ctx)
+        const user_id = ctx.state.user.id
+        const event_id = ctx.params.event_id
+
+        const event = await strapi.entityService.findOne(
+          'api::event.event', 
+          event_id, 
+          { populate: 
+            { participants: { fields: ['id'] },
+              event_host: { fields: ['id'] }
+            }
+          }
+        )
+
+        let dataToUpdate = {}
+        let details = ''
+
+        if (!event) { throw new NotFoundError() }
+
+        if (event.event_host.id == user_id) {
+          throw new UnauthorizedError('You are host of this event')
+        }
+
+        // # Check for Already Joined
+        if (event.participants.find( participant => participant.id === user_id)){
+          throw new UnauthorizedError('You are already joined')
+        }
+
+        // # Check for capacity
+        if (event.max_people != 0) { // if max_people is 0 == no people limit
+
+          if ( event.is_full ) {
+            throw new UnauthorizedError('This event is full')
+
+          } else if ( event.participants.length + 1 >= event.max_people ) {
+            dataToUpdate['is_full'] = true
+            details = '\nThis event is now full'
+          }
+        }
+
+        dataToUpdate['participants'] = { connect : [ user_id ] }
+
+        console.log(dataToUpdate)
+        const response = await strapi.service('api::event.event').join(ctx, dataToUpdate)
+
+        if (!response) throw new ApplicationError('Couldn\'t update event')
+
+        return response + details
+
       } catch (err) {
         throw err
       }
@@ -69,10 +115,45 @@ module.exports = createCoreController('api::event.event',
 
     async unjoin(ctx) {
       try {
-        return await strapi.service('api::event.event').unjoin(ctx)
+
+        const user_id = ctx.state.user.id
+        const event_id = ctx.params.event_id
+
+        const event = await strapi.entityService.findOne(
+          'api::event.event', 
+          event_id, 
+          { populate: 
+            { participants: { fields: ['id'] },
+              event_host: { fields: ['id'] }
+            }
+          }
+        )
+
+        let dataToUpdate = {}
+
+        if (!event) { throw new NotFoundError() }
+
+        if (event.event_host.id == user_id) {
+          throw new UnauthorizedError('You are host of this event')
+        }
+
+        // # Check for Already Joined
+        if (!event.participants.find( participant => participant.id === user_id)){
+          throw new UnauthorizedError('You are not joined to this event')
+        }
+
+        // # Update capacity status
+
+        if ( event.is_full ) {
+          dataToUpdate['is_full'] = false
+        } 
+
+        dataToUpdate['participants'] = { disconnect : [ user_id ] }
+
+        const response = await strapi.service('api::event.event').unjoin(ctx, dataToUpdate)
+        return response
       } catch (err) {
-        console.log(err)
-        return ctx.badRequest('cannot handle request: service error', { request: `${ctx.request.body}`})
+        throw err
       }
     },
 

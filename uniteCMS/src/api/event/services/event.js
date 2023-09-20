@@ -75,59 +75,11 @@ module.exports = createCoreService("api::event.event", ({ strapi }) => ({
     return HomePackage;
   },
   
-  async join(ctx) {
-    const action = 'join'
-    const action_target = 'event'
-
-    const user_id = ctx.state.user.id
-    const event_id = ctx.params.event_id
-    
-    const failLog = `user: ${user_id} could not perform < ${action} > on ${action_target}: ${event_id}`;
-    let successLog = `user: ${user_id} < ${action} > successful on ${action_target}: ${event_id}`
-    const maxedLog = 'The event is now at max capacity'
+  async join(ctx, dataToUpdate) {
+  const user_id = ctx.state.user.id
+  const event_id = ctx.params.event_id
 
     try {
-      const event = await strapi.entityService.findOne(
-        'api::event.event', 
-        event_id, 
-        { populate: 
-          { participants: { fields: ['id'] },
-            event_host: { fields: ['id'] }
-          }
-        }
-      )
-
-      let dataToUpdate = {}
-
-      if (!event) { throw new NotFoundError() }
-
-      // # Check for Already Joined
-      if (event.participants.find( participant => participant.id === user_id)){
-        throw new UnauthorizedError('You are already joined')
-      }
-
-      if (event.event_host.id == user_id) {
-        throw new UnauthorizedError('You are host of this event')
-      }
-
-      // # Check for capacity
-      if (event.max_people != 0) { // if max_people 0 == no people limit
-        console.debug('has people limit')
-
-        if (event.is_full) {
-          throw new UnauthorizedError('This event is full')
-
-        } else if (event.participants.length + 1 >= event.max_people) {
-          console.info('User MAXED OUT this events capacity')
-          successLog = successLog + '\n' + maxedLog
-
-          dataToUpdate['is_full'] = true
-        }
-      }
-
-      dataToUpdate['participants'] = { connect : [ user_id ] }
-
-      console.log(dataToUpdate)
       const response = await strapi.entityService.update(
         'api::event.event', 
         event_id, 
@@ -135,52 +87,33 @@ module.exports = createCoreService("api::event.event", ({ strapi }) => ({
       )
       
       if (!response) { 
-        throw new NotFoundError(
-          failLog + `. Could not update [${action_target}]` )
+        throw new NotFoundError('Could not update event')
       }
 
-      console.log(successLog)
-      return successLog
+      return (`user < ${user_id} > successfully joined event < ${event_id} >`)
 
     } catch (err) {
       throw err
     }
   },
 
-  async unjoin(ctx) {
-    const action = 'unjoin'
-    const action_target = 'event'
-
+  async unjoin(ctx, dataToUpdate) {
     const user_id = ctx.state.user.id
     const event_id = ctx.params.event_id
-
-    const successLog = `user: ${user_id} < ${action} > successful on ${action_target}: ${event_id}`
-    const failLog = `user: ${user_id} could not perform < ${action} > on "${action_target}": ${event_id}`;
-
     try {
       const response = await strapi.entityService.update(
         'api::event.event', 
         event_id, 
-        { data: { 
-          attending_events: { disconnect : [ user_id ] } 
-        }}
+        { data: dataToUpdate}
       )
 
-      // TODO: Check if you are a participant of that event
-      
-      if (!response) {
-        throw new Error(failLog + `. [${action_target} not found]`)
-      }
+      if (!response) throw new NotFoundError()
 
-      console.log(successLog)
-      return successLog
-
+      return (`user < ${user_id} > successfully unjoined event < ${event_id} >`)
 
     } catch (err) {
-      console.log(err)
-      console.log(failLog)
-      return failLog
+      throw err
     }
   },
-
+  
 }));
