@@ -9,10 +9,12 @@ module.exports = (plugin) => {
   plugin.controllers.user.befriend = befriend,
 
   plugin.routes['content-api'].routes.push({
-    method: 'GET',
+    method: 'POST',
     path: '/befriend/:friend_user_id',
     handler: 'user.befriend'
-  }) 
+  },
+  
+  ) 
 
   return plugin;
 }
