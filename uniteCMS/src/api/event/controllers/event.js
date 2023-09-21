@@ -19,7 +19,8 @@ module.exports = createCoreController('api::event.event',
       }
     },
 
-    // # Create Event (with automatic DATA_TO_APPEND)
+
+    // # Create Event (with automatic DATA_TO_APPEND) ---------
     async create(ctx) {
       try {
         const userId = ctx.state.user.id
@@ -56,6 +57,7 @@ module.exports = createCoreController('api::event.event',
       }
 
     },
+
 
   // ### JOIN, UNJOIN -----------------------------------------
     async join(ctx) {
@@ -143,7 +145,6 @@ module.exports = createCoreController('api::event.event',
         }
 
         // # Update capacity status
-
         if ( event.is_full ) {
           dataToUpdate['is_full'] = false
         } 
