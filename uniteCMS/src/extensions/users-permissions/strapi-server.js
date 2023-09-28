@@ -1,10 +1,10 @@
 const { errors } = require("@strapi/utils");
 const { ApplicationError } = require("@strapi/utils/dist/errors");
-const { getAllUsers } = require("./server/controllers/find");
+const { findAllUsers } = require("./server/controllers/find");
 const { befriend, batchBefriend } = require("./server/controllers/friends");
 
 module.exports = (plugin) => {
-  plugin.controllers.user.find = getAllUsers,
+  plugin.controllers.user.find = findAllUsers,
 
   plugin.controllers.user.befriend = befriend,
 

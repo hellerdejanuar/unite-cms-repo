@@ -1,7 +1,7 @@
 // ## EXPORTS
 
 module.exports = {
-  async getAllUsers(ctx) {
+  async findAllUsers(ctx) {
     const users = await strapi.entityService.findMany(
       "plugin::users-permissions.user",
       {
@@ -11,8 +11,6 @@ module.exports = {
         sort: 'public_name',
       }
     );
-
-    console.log(ctx);
     ctx.body = users;
   }
 }
