@@ -1,4 +1,4 @@
-const { ApplicationError } = require('@strapi/utils/dist/errors');
+const { ApplicationError, NotFoundError, UnauthorizedError } = require('@strapi/utils/dist/errors');
 const { getFriendshipData, send_friend_request, confirm_friend_request } = require('./friendshipOperators') 
 const { isAlreadyFriend, isRequestAlreadySent, isMutual } = require('./utils')
 
@@ -6,54 +6,42 @@ const { isAlreadyFriend, isRequestAlreadySent, isMutual } = require('./utils')
 module.exports = ({   
   async handleFriendRequest (user_id, friend_id) {
 
-  const userData = await getFriendshipData(user_id, friend_id);
+    const userData = await getFriendshipData(user_id, friend_id);
 
-  // #  friend part of the frienship process  #
-  if (!userData) {
-    throw new ApplicationError('Error fetching User ( Uncommon Behavior )');
-  }
+    // #  friend part of the frienship process  #
+    if (!userData) {
+      throw new NotFoundError('Error fetching User ( Uncommon Behavior )');
+    }
 
-  if (isAlreadyFriend(userData, friend_id)) {
-    throw new ApplicationError('You are already friends with this user');
-  }
+    if (isAlreadyFriend(userData, friend_id)) {
+      throw new UnauthorizedError('Already Friends', {code: 304});
+    }
 
-  let response = null;
+    let response = null;
 
-  if (isMutual(userData, friend_id)) {
-    // If the requested friend is already in incoming_friend_request 
-    console.debug('isMutual == true');
-    response = await confirm_friend_request(user_id, friend_id);
-    if (!response) throw new ApplicationError('Confirm friend request failed');
+    if (isMutual(userData, friend_id)) {
+      // If the requested friend is already in incoming_friend_request 
+      console.debug('isMutual == true');
 
-    return 'confirmed'
+      response = await confirm_friend_request(user_id, friend_id);
+      if (!response) throw new ApplicationError('Confirm friend request failed', {code: 500});
 
-  } else if (isRequestAlreadySent(userData, friend_id)) {
-    // Friend request already sent
-    console.debug('isRequestAlreadySent == true');
-    throw new ApplicationError('Friendship request already sent');
+      return 'confirmed'
 
-  } else {
+    } else if (isRequestAlreadySent(userData, friend_id)) {
+      // Friend request already sent
+      console.debug('isRequestAlreadySent == true');
+      throw new UnauthorizedError('Friendship request already sent', {code: 409});
+    } 
+
     // Else, try to send a friend request
-
-    console.debug('isMutual && isRequestAlreadySent == false');
-
     try { 
       response = await send_friend_request(user_id, friend_id);
-      if (!response) throw new ApplicationError('Send friend request failed');
-      
       return 'sent'
 
     } catch (err) {
-      // Send friend request failed
-
-      const message = (err.name == 'ValidationError') 
-      ? 'No User was found with this ID' 
-      : `\'${err.name}\'`;
-
-      throw new Error(
-        'Could Not Send Friend Request. ' + message
-      )
+      console.debug('isMutual && isRequestAlreadySent == false')
+      throw new NotFoundError('Send friend request failed', {code: 404}) // not sure if this ever happens
     }
-  }
   },
 })

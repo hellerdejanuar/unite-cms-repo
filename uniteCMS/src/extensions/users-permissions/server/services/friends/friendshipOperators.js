@@ -69,7 +69,7 @@ module.exports = ({
       return true;
 
     } catch (err){
-      const revert_friendship = await strapi.entityService.update( // revert friend to previous state
+      const revert_friendship = await strapi.entityService.update( // revert friend to previous state if Failed to update
         'plugin::users-permissions.user',
         friend_id,
         connect_disconnect_params('pending_friend_requests', user_id, 'friends', user_id)

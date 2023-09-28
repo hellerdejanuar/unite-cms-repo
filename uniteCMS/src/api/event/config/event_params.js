@@ -10,7 +10,8 @@ const STD_PARTICIPANTS_FIELDS = {
     'id',
     'username',
     'phone',
-  ]
+  ],
+  
 }
 
 const STD_EVENT_HOST_FIELDS = {
@@ -43,6 +44,7 @@ const STD_EVENT_HOST_FIELDS = {
     'online',
     'description',
   ],
+    filters: { status: true }// only show Events with Status: true
   }
 
   const STD_FRIEND_FIELDS = {
@@ -53,7 +55,8 @@ const STD_EVENT_HOST_FIELDS = {
     fields: [
       'id',
       'username',
-    ]
+    ],
+    filters: { status: true } // only show Users with Status: true
   }
 
 module.exports = { 

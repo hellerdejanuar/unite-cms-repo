@@ -16,7 +16,7 @@ module.exports = ({
 
   isAlreadyFriend (userData, friend_id) {
     if (!userData.friends[0]){
-      console.info('Not friends yet, trying to connect... ');
+      // console.info('Not friends yet, trying to connect... ');
       return false
     }
 
