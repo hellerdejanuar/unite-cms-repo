@@ -11,6 +11,6 @@ module.exports = {
         sort: 'public_name',
       }
     );
-    ctx.body = users;
+    return users;
   }
 }
