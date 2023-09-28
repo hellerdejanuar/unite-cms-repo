@@ -7,9 +7,11 @@ module.exports = {
       {
         fields: ['id', 'public_name', 'username'],
         populate: { profile_image: true },
-        filters: { status: true } // show only with Status: True
+        filters: { status: true }, // show only with Status: True
+        sort: 'public_name',
       }
     );
+
     console.log(ctx);
     ctx.body = users;
   }
