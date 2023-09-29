@@ -19,5 +19,21 @@ module.exports = ({
     const obj = { data };
   
     return obj;
-  }
+  },
+  
+  disconnect_params (relation_disconnect, disconnect) {
+    // # Parameter generation for strapi database handling
+    
+        if (typeof disconnect === 'string') {
+          disconnect = parseInt(disconnect);
+        }
+        const data = {};
+      
+        data[relation_disconnect] = { disconnect: [disconnect] };
+
+      
+        const obj = { data };
+      
+        return obj;
+      }
 })

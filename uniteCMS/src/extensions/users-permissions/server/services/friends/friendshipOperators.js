@@ -1,6 +1,7 @@
-const { ApplicationError } = require("@strapi/utils/dist/errors");
+const { ApplicationError, NotFoundError } = require("@strapi/utils/dist/errors");
 const { connect_disconnect_params } = require("../../utils");
-const { isAlreadyFriend ,isMutual, isRequestAlreadySent } = require("./utils");
+const { isAlreadyFriend ,isInIncomingRequests, isRequestAlreadySent } = require("./utils");
+const { disconnect_params } = require("../../utils/utils");
 
 
 module.exports = ({ 
@@ -84,4 +85,53 @@ module.exports = ({
     }
   },
 
+  async delete_friend (user_id, friend_id) {
+    try { 
+      const response_user = await strapi.entityService.update(
+        'plugin::users-permissions.user',
+        user_id,
+        disconnect_params('friends', friend_id)
+      )
+      if (!response_user) throw new ApplicationError('Delete Friend ERROR: Couldnt change OWN data', {code: 500})
+
+      const response_friend = await strapi.entityService.update( // update friend
+        'plugin::users-permissions.user',
+        friend_id,
+        disconnect_params('friends', user_id)
+        // * pending_friend_requests disconnection automatically affects related < incoming_friend_requests > *
+      )
+
+      if (!response_friend) { 
+
+        const revert_user = await strapi.entityService.update(
+          'plugin::users-permissions.user',
+          user_id,
+          connect_disconnect_params('friends', friend_id)
+        )
+
+        if (!revert_user) {
+          throw new ApplicationError('Delete Friend FATAL ERROR: Couldnt REVERT OWN data to original state. Database integrity compromised', {code: 500})
+        }
+  
+        throw new ApplicationError('Delete Friend ERROR: Couldnt change FRIEND data', {code: 500})
+      }
+
+    } catch (err) {
+      throw err
+    }
+  },
+
+  async cancel_friend_request (user_id, friend_id) {
+    try {
+      const response = await strapi.entityService.update(
+        'plugin::users-permissions.user',
+        user_id,
+        disconnect_params('pending_friend_requests', friend_id)
+      )
+
+      if (!response) throw new ApplicationError('Delete Friend ERROR: Couldnt cancel friend request', {code: 500})
+    } catch (err){
+      throw err
+    }
+  }
 })

@@ -1,6 +1,6 @@
 const { ApplicationError, NotFoundError, UnauthorizedError } = require('@strapi/utils/dist/errors');
 const { getFriendshipData, send_friend_request, confirm_friend_request } = require('./friendshipOperators') 
-const { isAlreadyFriend, isRequestAlreadySent, isMutual } = require('./utils')
+const { isAlreadyFriend, isRequestAlreadySent, isInIncomingRequests } = require('./utils')
 
 
 module.exports = ({   
@@ -19,9 +19,9 @@ module.exports = ({
 
     let response = null;
 
-    if (isMutual(userData, friend_id)) {
+    if (isInIncomingRequests(userData, friend_id)) {
       // If the requested friend is already in incoming_friend_request 
-      console.debug('isMutual == true');
+      console.debug('isInIncomingRequests == true');
 
       response = await confirm_friend_request(user_id, friend_id);
       if (!response) throw new ApplicationError('Confirm friend request failed', {code: 500});
@@ -40,7 +40,7 @@ module.exports = ({
       return 'sent'
 
     } catch (err) {
-      console.debug('isMutual && isRequestAlreadySent == false')
+      console.debug('isInIncomingRequests && isRequestAlreadySent == false')
       throw new NotFoundError('Send friend request failed', {code: 404}) // not sure if this ever happens
     }
   },

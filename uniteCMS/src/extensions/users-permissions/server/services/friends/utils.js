@@ -3,7 +3,7 @@
 module.exports = ({
 
   // # Utils
-  isMutual (userData, friend_id) {
+  isInIncomingRequests (userData, friend_id) {
     if (!userData.incoming_friend_requests[0]) return false;
 
     if (userData.incoming_friend_requests[0].id == friend_id) { // Redundant since SQL filtering
@@ -21,11 +21,11 @@ module.exports = ({
     }
 
     if (userData.friends[0].id == friend_id && userData.friends.length == 1) {
-      console.info('You are already friends')
+      // console.info('You are already friends')
       return true
       
     } else {
-      console.info('Not friends yet, trying to connect... ');
+      // console.info('Not friends yet, trying to connect... ');
       return false 
     }
   },
@@ -35,13 +35,14 @@ module.exports = ({
       if (!userData.pending_friend_requests[0]) return false
 
       if (userData.pending_friend_requests[0].id == friend_id){ // Redundant since SQL filtering
-        console.info('Friendship request already sent')
+        // console.info('Friendship request already sent')
         return true
       } 
       else return false
 
     } catch (err) {
       console.error('No entries in < pending_friend_requests >' + err.message)
+      return false
     }
   }
 })
