@@ -9,17 +9,12 @@ module.exports = {
 
     try {
       const friendship_response = await handleUnfriend(user_id, friend_id)
-      console.debug(friendship_response)
       
-      if (!friendship_response) {
-
-        throw new Error(`[ Could not cancel friendship ]`)
-      }
-
+      if (!friendship_response) throw new Error(`[ Could not cancel friendship ]`)
+      
       return friendship_response 
 
     } catch (err) {
-      
       const date = new Date(Date.now()).toUTCString()
       console.error(`${date} ${err.message}`)
       throw new ApplicationError(err.message)
