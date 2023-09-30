@@ -6,39 +6,34 @@ const { isAlreadyFriend, isRequestAlreadySent, isInIncomingRequests } = require(
 module.exports = ({   
   async handleUnfriend (user_id, friend_id) {
     try { 
-    const userData = await getFriendshipData(user_id, friend_id);
+      const userData = await getFriendshipData(user_id, friend_id);
 
-    // #  friend part of the frienship process  #
-    if (!userData) {
-      throw new NotFoundError('Error fetching User ( Uncommon Behavior )');
-    }
+      // #  friend part of the frienship process  #
+      if (!userData) throw new NotFoundError('Error fetching User ( Uncommon Behavior )')
 
-    let response
-    let message = ''
+      let response
+      let message = ''
 
-    if (isAlreadyFriend(userData, friend_id)) {
-      response = await delete_friend(user_id, friend_id)
-      message = 'successfuly removed from friends list'
-    }
+      if (isAlreadyFriend(userData, friend_id)) {
+        response = await delete_friend(user_id, friend_id)
+        message = 'Successfuly removed from friends'
+      }
 
-    if (isInIncomingRequests(userData, friend_id)) {
+      if (isInIncomingRequests(userData, friend_id)) {
+        response = await cancel_friend_request(friend_id, user_id)
+        message = 'Friend request declined'
 
-      response = await cancel_friend_request(friend_id, user_id)
-      message = 'request declined'
+      } else if (isRequestAlreadySent(userData, friend_id)) {
+        response = await cancel_friend_request(user_id, friend_id)
+        message = 'Friend request canceled'
+      } 
 
-    } else if (isRequestAlreadySent(userData, friend_id)) {
-      // if (friend request already sent) => cancel request
-      response = await cancel_friend_request(user_id, friend_id)
-      message = 'Friend request canceled'
-    } 
-
-    if (response != undefined && response != null) 
-      { throw new ApplicationError('Removing friendship failed', {code: 500}) } // not sure if this ever happens
-    
-    return message
+      if (response != undefined && response != null) 
+        { throw new ApplicationError('Removing friendship failed', {code: 500}) } // not sure if this ever happens
+      
+      return message
 
     } catch (err) {
-      // console.debug('isMutual && isRequestAlreadySent == false')
       throw err
     }
   },
