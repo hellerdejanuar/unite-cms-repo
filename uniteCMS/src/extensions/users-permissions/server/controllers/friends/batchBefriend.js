@@ -4,7 +4,7 @@ const { handleFriendRequest } = require("../../services/friends/handleFriendRequ
 module.exports = {
   async batchBefriend (ctx) {
     const user_id = ctx.state.user.id
-    const batch = ctx.request.body
+    const batch = ctx.request.body // SQL injection vulnerability <---
 
     const promises = batch.map( async (friend_id) => {
       try {

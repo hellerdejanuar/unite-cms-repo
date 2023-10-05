@@ -120,7 +120,12 @@
       "type": "relation",
       "relation": "manyToMany",
       "target": "plugin::users-permissions.user",
-      "inversedBy": "sent_friend_requests"
+      "mappedBy": "sent_friend_requests"
+    },
+    "new_friends": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "plugin::users-permissions.user"
     }
   }
 }

@@ -46,12 +46,18 @@ module.exports = ({
   async confirm_friend_request (user_id, friend_id) {
     const function_name = 'confirm_friend_request'
     const errorLog = (details, isUpper=true) => `Error: < ${function_name} > Failed: ${ isUpper ? details.toUpperCase(): details}`
-
-
+    const friends_params = {
+      data: {
+        friends: { connect: [ user_id] },
+        sent_friend_requests: { disconnect: [user_id] },
+        new_friends: { connect: [user_id] }
+      }
+    }
+    
     const response_friend = await strapi.entityService.update( // update friend
       'plugin::users-permissions.user',
       friend_id,
-      connect_disconnect_params('friends', user_id, 'sent_friend_requests', user_id)
+      friends_params
       // * sent_friend_requests disconnection automatically affects related < incoming_friend_requests > *
     );
 
