@@ -32,16 +32,16 @@ module.exports = ({
 
   isRequestAlreadySent (userData, friend_id) {
     try {
-      if (!userData.pending_friend_requests[0]) return false
+      if (!userData.sent_friend_requests[0]) return false
 
-      if (userData.pending_friend_requests[0].id == friend_id){ // Redundant since SQL filtering
+      if (userData.sent_friend_requests[0].id == friend_id){ // Redundant since SQL filtering
         // console.info('Friendship request already sent')
         return true
       } 
       else return false
 
     } catch (err) {
-      console.error('No entries in < pending_friend_requests >' + err.message)
+      console.error('No entries in < sent_friend_requests >' + err.message)
       return false
     }
   }

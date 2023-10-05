@@ -16,7 +16,7 @@ module.exports = ({
               fields: [ 'id' ],
               filters: { id: friend_id },
             },
-            pending_friend_requests: {
+            sent_friend_requests: {
               fields: ['id'],
               filters: { id: friend_id },
             },
@@ -38,7 +38,7 @@ module.exports = ({
     return await strapi.entityService.update(
       'plugin::users-permissions.user',
       user_id,
-      connect_disconnect_params('pending_friend_requests', friend_id) 
+      connect_disconnect_params('sent_friend_requests', friend_id) 
       // this connection automatically creates related incoming_friend_requests in the target friend
     );
   },
@@ -51,8 +51,8 @@ module.exports = ({
     const response_friend = await strapi.entityService.update( // update friend
       'plugin::users-permissions.user',
       friend_id,
-      connect_disconnect_params('friends', user_id, 'pending_friend_requests', user_id)
-      // * pending_friend_requests disconnection automatically affects related < incoming_friend_requests > *
+      connect_disconnect_params('friends', user_id, 'sent_friend_requests', user_id)
+      // * sent_friend_requests disconnection automatically affects related < incoming_friend_requests > *
     );
 
     if (!response_friend) throw new Error(errorLog('friend unavailable'))
@@ -73,7 +73,7 @@ module.exports = ({
       const revert_friendship = await strapi.entityService.update( // revert friend to previous state if Failed to update
         'plugin::users-permissions.user',
         friend_id,
-        connect_disconnect_params('pending_friend_requests', user_id, 'friends', user_id)
+        connect_disconnect_params('sent_friend_requests', user_id, 'friends', user_id)
         // *  *
       );
 
@@ -98,7 +98,7 @@ module.exports = ({
         'plugin::users-permissions.user',
         friend_id,
         disconnect_params('friends', user_id)
-        // * pending_friend_requests disconnection automatically affects related < incoming_friend_requests > *
+        // * sent_friend_requests disconnection automatically affects related < incoming_friend_requests > *
       )
 
       if (!response_friend) { 
@@ -126,7 +126,7 @@ module.exports = ({
       const response = await strapi.entityService.update(
         'plugin::users-permissions.user',
         user_id,
-        disconnect_params('pending_friend_requests', friend_id)
+        disconnect_params('sent_friend_requests', friend_id)
       )
 
       if (!response) throw new ApplicationError('Delete Friend ERROR: Couldnt cancel friend request', {code: 500})
