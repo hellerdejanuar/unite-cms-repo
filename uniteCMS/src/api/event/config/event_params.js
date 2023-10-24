@@ -9,7 +9,7 @@ const STD_PARTICIPANTS_FIELDS = {
   fields: [
     'id',
     'username',
-    'phone',
+    'public_name'
   ],
   
 }
@@ -21,7 +21,7 @@ const STD_EVENT_HOST_FIELDS = {
   fields: [
   'id',
   'username',
-  'phone',
+  'public_name'
   ]
 }
 
@@ -55,6 +55,7 @@ const STD_EVENT_HOST_FIELDS = {
     fields: [
       'id',
       'username',
+      'public_name',
     ],
     filters: { status: true } // only show Users with Status: true
   }
