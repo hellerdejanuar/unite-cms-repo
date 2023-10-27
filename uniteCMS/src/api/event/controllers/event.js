@@ -78,9 +78,11 @@ module.exports = createCoreController('api::event.event',
         let dataToUpdate = {}
         let details = ''
 
-        if (!event) { throw new NotFoundError() }
+        // check if event exists
+        if (!event) { throw new NotFoundError() } 
 
-        if (event.event_host.id == user_id) {
+        // if user !event_host
+        if (event.event_host.id == user_id) { 
           throw new UnauthorizedError('You are host of this event')
         }
 
@@ -157,6 +159,10 @@ module.exports = createCoreController('api::event.event',
         throw err
       }
     },
+    async count(ctx) {
+      var { query } = ctx.request 
+      return strapi.query('api::event.event').count({where: query})
+    }
 
   })
 );

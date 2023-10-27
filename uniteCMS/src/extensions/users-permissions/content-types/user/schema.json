@@ -85,7 +85,8 @@
       "type": "string",
       "required": true,
       "regex": "[0-9]{1,31}",
-      "unique": true
+      "unique": true,
+      "private": true
     },
     "hosted_events": {
       "type": "relation",
