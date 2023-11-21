@@ -1,4 +1,4 @@
-FROM node:16
+FROM node:16 as stage
 RUN apt-get update && apt-get install libvips-dev -y
 ARG NODE_ENV=development
 ENV NODE_ENV=${NODE_ENV}

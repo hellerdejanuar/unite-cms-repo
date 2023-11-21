@@ -1,5 +1,5 @@
 ## User ----------------------------------------
-  user restrictins: 
+  user restrictins: // only show the users that match this cirteria
     confirmed: true
     blocked: false
     status: true
@@ -7,6 +7,7 @@
 # Public data ---
   public_name:  { read: ['everyone'], 
                   update: ['me'] }
+
   profile_image:  { read: ['everone'], 
                     update: ['me'] }
 
