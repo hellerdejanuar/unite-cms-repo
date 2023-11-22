@@ -1,4 +1,4 @@
-const { ApplicationError, NotFoundError } = require("@strapi/utils/dist/errors")
+const { ApplicationError, NotFoundError } = require("@strapi/utils").errors
 const { handleFriendRequest } = require("../../services/friends/handleFriendRequest")
 
 module.exports = {

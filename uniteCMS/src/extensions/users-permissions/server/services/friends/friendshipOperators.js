@@ -1,4 +1,4 @@
-const { ApplicationError, NotFoundError } = require("@strapi/utils/dist/errors");
+const { ApplicationError, NotFoundError } = require("@strapi/utils").errors;
 const { connect_disconnect_params } = require("../../utils");
 const { isAlreadyFriend ,isInIncomingRequests, isRequestAlreadySent } = require("./utils");
 const { disconnect_params } = require("../../utils/utils");

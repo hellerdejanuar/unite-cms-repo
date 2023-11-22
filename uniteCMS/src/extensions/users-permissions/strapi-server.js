@@ -1,5 +1,5 @@
 const { errors } = require("@strapi/utils");
-const { ApplicationError } = require("@strapi/utils/dist/errors");
+const { ApplicationError } = require("@strapi/utils").errors;
 const { findAllUsers } = require("./server/controllers/find");
 const { befriend, batchBefriend, unfriend } = require("./server/controllers/friends");
 const { deleteNewFriendsNotification } = require("./server/controllers/notifications/deleteNewFriends");
@@ -10,6 +10,10 @@ module.exports = (plugin) => {
   plugin.controllers.user.batchBefriend = batchBefriend,
   plugin.controllers.user.unfriend = unfriend,
   plugin.controllers.user.deleteNewFriendsNotification = deleteNewFriendsNotification
+
+  plugin.controllers.user.register = async (ctx) => {
+      return 'ok'
+    }
 
   plugin.routes['content-api'].routes.push({
     method: 'POST',

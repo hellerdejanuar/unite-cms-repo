@@ -1,4 +1,4 @@
-const { ApplicationError } = require("@strapi/utils/dist/errors")
+const { ApplicationError } = require("@strapi/utils").errors
 const { handleFriendRequest } = require("../../services/friends/handleFriendRequest")
 
 

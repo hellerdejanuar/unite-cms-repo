@@ -1,6 +1,6 @@
 'use strict';
 
-const { ApplicationError, NotFoundError, UnauthorizedError } = require('@strapi/utils/dist/errors');
+const { ApplicationError, NotFoundError, UnauthorizedError } = require('@strapi/utils').errors;
 
 /**
  * event controller

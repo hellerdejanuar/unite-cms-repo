@@ -1,4 +1,4 @@
-const { ApplicationError, NotFoundError, UnauthorizedError } = require('@strapi/utils/dist/errors');
+const { ApplicationError, NotFoundError, UnauthorizedError } = require('@strapi/utils').errors;
 const { getFriendshipData, send_friend_request, confirm_friend_request, delete_friend, cancel_friend_request } = require('./friendshipOperators') 
 const { isAlreadyFriend, isRequestAlreadySent, isInIncomingRequests } = require('./utils')
 

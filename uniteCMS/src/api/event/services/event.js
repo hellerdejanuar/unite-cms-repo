@@ -12,7 +12,7 @@ const {
   STD_EVENT_FIELDS,
   STD_FRIEND_FIELDS,
 } = require("../config/event_params");
-const { ApplicationError, NotFoundError, UnauthorizedError } = require("@strapi/utils/dist/errors");
+const { ApplicationError, NotFoundError, UnauthorizedError } = require("@strapi/utils").errors;
 
 module.exports = createCoreService("api::event.event", ({ strapi }) => ({
 
